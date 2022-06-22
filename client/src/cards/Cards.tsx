@@ -18,7 +18,7 @@ export default function Cards({
   
   const myVote = session.votes[user];
   useEffect(() => {
-    if (myVote.size == null) {
+    if (myVote?.size == null) {
       setRememberChoice(null);
     }
   }, [myVote]);
