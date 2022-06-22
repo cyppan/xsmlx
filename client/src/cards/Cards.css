@@ -1,0 +1,5 @@
+.Cards {
+  --gap: 10px;
+  display: flex;
+  gap: var(--gap);
+}

@@ -1,0 +1,21 @@
+.Header {
+  display: flex;
+  align-items: center;
+}
+
+.Header h1 {
+  color: #5f42f3;
+}
+
+.Header-left {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.Header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}

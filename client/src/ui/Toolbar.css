@@ -1,0 +1,23 @@
+.Toolbar {
+  box-shadow: 0px 0px 2px grey;
+  display: flex;
+  padding: 1em;
+  border-radius: 0.1em;
+}
+
+.Toolbar-left {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.Toolbar-center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.Toolbar-right {
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,21 @@
+.Card {
+  box-sizing: border-box;
+  background-color: #eee;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.2em;
+  width: calc(100% - 4 * var(--gap));
+  border-radius: 0.2em;
+}
+
+.Card-clickable:hover {
+  border: 2px solid yellow;
+  cursor: pointer;
+}
+
+.Card-selected {
+  border: 2px solid #8979d8;
+}

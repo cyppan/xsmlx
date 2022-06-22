@@ -1,0 +1,52 @@
+.SizesChart {
+  --gap: 10px;
+  display: flex;
+  gap: var(--gap);
+  transform-origin: top;
+  animation-name: sizes-chart-animation;
+  animation-duration: 500ms;
+  animation-timing-function: ease-out;
+}
+
+.SizeBar {
+  width: 100%;
+  padding: 0 0em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.SizeBarPart {
+  box-sizing: border-box;
+  width: 100%;
+  /* aspect-ratio: 1 / 1; */
+  background-color: #8979d8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid white;
+  margin: 2px 0;
+  padding: 2px;
+  border-radius: 0.2em;
+}
+
+.SizeBarPart:first-child {
+  margin-top: 4px;
+}
+
+.SizeBarPart > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+@keyframes sizes-chart-animation {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}

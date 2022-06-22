@@ -1,0 +1,15 @@
+.Button {
+  box-shadow: 3px 3px 0 #8979d8;
+  border: none;
+  border-radius: 0.1em;
+  padding: 0.5em;
+  cursor: pointer;
+  background-color: #eee;
+}
+.Button:hover {
+  background-color: #ccc;
+}
+.Button:active {
+  box-shadow: none;
+  transform: translateY(5px);
+}
