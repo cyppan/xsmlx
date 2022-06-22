@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import { Request } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import * as trpcExpress from '@trpc/server/adapters/express';
@@ -13,6 +14,7 @@ const createContext = ({
 
 app.use(express.json());
 app.use(cors());
+app.options('*', cors<Request>());
 app.use(
   '/session',
   trpcExpress.createExpressMiddleware({
