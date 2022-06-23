@@ -30,7 +30,7 @@ app.listen(8080, () => {
 import ws from 'ws';
 import { applyWSSHandler } from '@trpc/server/adapters/ws';
 const wss = new ws.Server({
-  port: 3001,
+  port: 8081,
 });
 const handler = applyWSSHandler({
   wss,
@@ -39,12 +39,12 @@ const handler = applyWSSHandler({
 });
 
 wss.on('connection', (ws) => {
-  console.log(`➕➕ Connection (${wss.clients.size})`);
+  console.log(`+1 Connection (${wss.clients.size})`);
   ws.once('close', () => {
-    console.log(`➖➖ Connection (${wss.clients.size})`);
+    console.log(`-1 Connection (${wss.clients.size})`);
   });
 });
-console.log('✅ WebSocket Server listening on ws://localhost:3001');
+console.log('WebSocket Server listening on ws://localhost:8081');
 
 process.on('SIGTERM', () => {
   console.log('SIGTERM');

@@ -1,0 +1,21 @@
+FROM node:16
+
+ARG http_api_host
+ARG ws_api_host
+
+WORKDIR /usr/src/app
+
+COPY client/package*.json ./client/
+
+RUN cd client && npm ci --only=production
+
+COPY ./client client
+COPY ./server server
+
+RUN cd client && REACT_APP_HTTP_API_HOST="$http_api_host" REACT_APP_WS_API_HOST="$ws_api_host" npm run build
+
+RUN npm install -g serve
+
+EXPOSE 3000
+
+CMD cd client && npx serve -s build

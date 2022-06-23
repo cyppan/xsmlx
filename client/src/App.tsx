@@ -12,8 +12,10 @@ import InSessionPage from './pages/InSessionPage';
 import CreateSessionPage from './pages/CreateSessionPage';
 import WaitingRoomPage from './pages/WaitingRoomPage';
 
-const queryMutationUrl: string = 'http://localhost:8080/session';
-const subscriptionUrl: string = 'ws://localhost:3001';
+const httpApiHost = process.env.REACT_APP_HTTP_API_HOST || 'localhost:8080';
+const wsApiHost = process.env.REACT_APP_WS_API_HOST || 'localhost:8081';
+const apiUrl = `http://${httpApiHost}/session`;
+const websocketUrl = `ws://${wsApiHost}`;
 
 export const trpc = createReactQueryHooks<TRPCRouter>();
 
@@ -43,11 +45,11 @@ function withTrpc(WrappedComponent: React.FunctionComponent): React.FunctionComp
             },
             true: wsLink({
               client: createWSClient({
-                url: subscriptionUrl,
+                url: websocketUrl,
               }),
             }),
             false: httpLink({
-              url: queryMutationUrl,
+              url: apiUrl,
             }),
           }),
         ],

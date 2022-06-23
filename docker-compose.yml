@@ -1,0 +1,28 @@
+version: "3"
+
+networks:
+  web:
+    external: true
+
+services:
+  server:
+    build: 
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - 8080:8080
+      - 8081:8081
+    networks:
+      - web
+    
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+      args:
+        http_api_host: ${HTTP_API_HOST:-localhost:8080}
+        ws_api_host: ${WS_API_HOST:-localhost:8081}
+    ports:
+      - 80:3000
+    networks:
+      - web
