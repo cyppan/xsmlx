@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY server/package*.json ./server/
 
-RUN cd server && npm ci --only=production
+RUN cd server && npm ci
 
 COPY ./server server
 

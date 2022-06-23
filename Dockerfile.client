@@ -5,13 +5,16 @@ ARG ws_api_host
 
 WORKDIR /usr/src/app
 
+COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 
-RUN cd client && npm ci --only=production
+RUN cd server && npm ci
+RUN cd client && npm ci --omit=dev
 
 COPY ./client client
 COPY ./server server
 
+CMD cd server && ./node_modules/.bin/tsc
 RUN cd client && REACT_APP_HTTP_API_HOST="$http_api_host" REACT_APP_WS_API_HOST="$ws_api_host" npm run build
 
 RUN npm install -g serve
