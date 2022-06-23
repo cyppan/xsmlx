@@ -12,10 +12,14 @@
 }
 
 .Card-clickable:hover {
-  box-shadow: inset 0 0 0 2px yellow;
+  box-shadow: inset 0 0 3px 0 #8979d8;
   cursor: pointer;
 }
 
 .Card-selected {
   box-shadow: inset 0 0 0 2px #8979d8;
+}
+
+.Card-clickable.Card-selected:hover {
+  box-shadow: inset 0 0 3px 2px #8979d8;
 }
