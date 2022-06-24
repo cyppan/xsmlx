@@ -43,13 +43,25 @@ services:
   
   reverse-proxy:
     image: traefik:v2.8
+    command:
+      - traefik
+      - --entryPoints.web.address=:80
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.websecure.address=:443
+      - --api.dashboard=true
+      - --certificatesResolvers.lets-encrypt.acme.email=$CERTIFICATE_EMAIL
+      - --certificatesResolvers.lets-encrypt.acme.storage=acme.json
+      - --certificatesResolvers.lets-encrypt.acme.httpChallenge.entryPoint=web
+      - --providers.docker.watch=true
+      - --providers.docker.network=web
+      - --providers.file.filename=traefik_dynamic.toml
     environment:
       - HOST=${TRAEFIK_HOST:-traefik.localhost}
       - BASIC_AUTH=$BASIC_AUTH
       - CERTIFICATE_EMAIL=$CERTIFICATE_EMAIL
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - $PWD/traefik.toml:/traefik.toml
       - $PWD/traefik_dynamic.toml:/traefik_dynamic.toml
       - $PWD/acme.json:/acme.json
     ports:
