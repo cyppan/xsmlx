@@ -9,9 +9,18 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile.server
-    ports:
-      - 8080:8080
-      - 8081:8081
+    labels:
+      - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto = https
+      - traefik.http.routers.http-api.rule=Host(`${HTTP_API_HOST:-poker-planning-http-api.localhost}`)
+      - traefik.http.routers.http-api.service=svc_http-api
+      - traefik.http.routers.http-api.tls=true
+      - traefik.http.routers.http-api.tls.certresolver=lets-encrypt
+      - traefik.http.services.svc_http-api.loadbalancer.server.port=8080
+      - traefik.http.routers.ws-api.rule=Host(`${WS_API_HOST:-poker-planning-ws-api.localhost}`)
+      - traefik.http.routers.ws-api.service=svc_ws-api
+      - traefik.http.routers.ws-api.tls=true
+      - traefik.http.routers.ws-api.tls.certresolver=lets-encrypt
+      - traefik.http.services.svc_ws-api.loadbalancer.server.port=8081
     networks:
       - web
     
@@ -20,9 +29,31 @@ services:
       context: .
       dockerfile: Dockerfile.client
       args:
-        http_api_host: ${HTTP_API_HOST:-localhost:8080}
-        ws_api_host: ${WS_API_HOST:-localhost:8081}
+        http_api_base_url: ${HTTP_API_BASE_URL:-https://poker-planning-http-api.localhost}
+        ws_api_base_url: ${WS_API_BASE_URL:-wss://poker-planning-ws-api.localhost}
+    labels:
+      - traefik.http.middlewares.client-auth.basicauth.users=$BASIC_AUTH
+      - traefik.http.routers.client.middlewares=client-auth
+      - traefik.http.routers.client.rule=Host(`${FRONT_HOST:-poker-planning.localhost}`)
+      - traefik.http.routers.client.tls=true
+      - traefik.http.routers.client.tls.certresolver=lets-encrypt
+      - traefik.port=3000
+    networks:
+      - web
+  
+  reverse-proxy:
+    image: traefik:v2.8
+    environment:
+      - HOST=${TRAEFIK_HOST:-traefik.localhost}
+      - BASIC_AUTH=$BASIC_AUTH
+      - CERTIFICATE_EMAIL=$CERTIFICATE_EMAIL
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $PWD/traefik.toml:/traefik.toml
+      - $PWD/traefik_dynamic.toml:/traefik_dynamic.toml
+      - $PWD/acme.json:/acme.json
     ports:
-      - 80:3000
+      - 80:80
+      - 443:443
     networks:
       - web

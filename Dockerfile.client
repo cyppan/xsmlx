@@ -1,7 +1,7 @@
 FROM node:16
 
-ARG http_api_host
-ARG ws_api_host
+ARG http_api_base_url
+ARG ws_api_base_url
 
 WORKDIR /usr/src/app
 
@@ -15,7 +15,7 @@ COPY ./client client
 COPY ./server server
 
 CMD cd server && ./node_modules/.bin/tsc
-RUN cd client && REACT_APP_HTTP_API_HOST="$http_api_host" REACT_APP_WS_API_HOST="$ws_api_host" npm run build
+RUN cd client && REACT_APP_HTTP_API_BASE_URL="$http_api_base_url" REACT_APP_WS_API_BASE_URL="$ws_api_base_url" npm run build
 
 RUN npm install -g serve
 
