@@ -1,5 +1,5 @@
 .Button {
-  box-shadow: 3px 3px 0 #8979d8;
+  box-shadow: 3px 3px 0 var(--themeColor);
   border: none;
   border-radius: 0.1em;
   padding: 0.5em;

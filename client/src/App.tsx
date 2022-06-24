@@ -12,12 +12,16 @@ import InSessionPage from './pages/InSessionPage';
 import CreateSessionPage from './pages/CreateSessionPage';
 import WaitingRoomPage from './pages/WaitingRoomPage';
 
-const httpApiHost = process.env.REACT_APP_HTTP_API_BASE_URL || 'http://poker-planning-http-api.localhost:8080';
-const wsApiHost = process.env.REACT_APP_WS_API_BASE_URL || 'ws://poker-planning-ws-api.localhost:8081';
+const httpApiHost =
+  process.env.REACT_APP_HTTP_API_BASE_URL ||
+  'http://poker-planning-http-api.localhost:8080';
+const wsApiHost =
+  process.env.REACT_APP_WS_API_BASE_URL ||
+  'ws://poker-planning-ws-api.localhost:8081';
 const apiUrl = `${httpApiHost}/session`;
 const websocketUrl = `${wsApiHost}`;
 
-console.debug("config", {apiUrl, websocketUrl});
+console.debug('config', { apiUrl, websocketUrl });
 
 export const trpc = createReactQueryHooks<TRPCRouter>();
 
@@ -34,7 +38,9 @@ function App() {
   }
 }
 
-function withTrpc(WrappedComponent: React.FunctionComponent): React.FunctionComponent {
+function withTrpc(
+  WrappedComponent: React.FunctionComponent
+): React.FunctionComponent {
   return function () {
     const [queryClient] = useState(() => new QueryClient());
     const [trpcClient] = useState(() =>

@@ -29,6 +29,7 @@ services:
       context: .
       dockerfile: Dockerfile.client
       args:
+        front_theme_color: ${FRONT_THEME_COLOR:-#8979d8}
         http_api_base_url: ${HTTP_API_BASE_URL:-https://poker-planning-http-api.localhost}
         ws_api_base_url: ${WS_API_BASE_URL:-wss://poker-planning-ws-api.localhost}
     labels:

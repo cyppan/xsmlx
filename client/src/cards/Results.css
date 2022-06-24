@@ -21,7 +21,7 @@
   box-sizing: border-box;
   width: 100%;
   /* aspect-ratio: 1 / 1; */
-  background-color: #8979d8;
+  background-color: var(--themeColor);
   color: white;
   display: flex;
   align-items: center;

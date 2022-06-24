@@ -4,7 +4,7 @@
 }
 
 .Header h1 {
-  color: #5f42f3;
+  color: var(--themeColor);
 }
 
 .Header-left {
