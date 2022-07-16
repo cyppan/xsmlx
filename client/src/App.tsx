@@ -12,15 +12,13 @@ import InSessionPage from './pages/InSessionPage';
 import CreateSessionPage from './pages/CreateSessionPage';
 import WaitingRoomPage from './pages/WaitingRoomPage';
 
-const httpApiHost =
-  process.env.REACT_APP_HTTP_API_BASE_URL ||
-  'http://poker-planning-http-api.localhost:8080';
-const wsApiHost =
-  process.env.REACT_APP_WS_API_BASE_URL ||
-  'ws://poker-planning-ws-api.localhost:8081';
-const apiUrl = `${httpApiHost}/session`;
-const websocketUrl = `${wsApiHost}`;
+const host = process.env.REACT_APP_HOST;
+const apiUrl = `http${process.env.REACT_APP_TLS === "true" ? "s" : ""}://${host}/trpc`;
+const websocketUrl = `ws${process.env.REACT_APP_TLS === "true" ? "s" : ""}://${host}/websockets`;
 
+if (!host || host.trim() === '') {
+  throw new Error('missing env var REACT_APP_HOST')
+}
 console.debug('config', { apiUrl, websocketUrl });
 
 export const trpc = createReactQueryHooks<TRPCRouter>();

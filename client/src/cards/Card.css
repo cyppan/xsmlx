@@ -1,3 +1,10 @@
+.CardContainer {
+  width: var(--cardWidth);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .Card {
   box-sizing: border-box;
   background-color: #eee;
@@ -7,8 +14,8 @@
   justify-content: center;
   font-weight: 800;
   font-size: 1.2em;
-  width: calc(100% - 4 * var(--gap));
   border-radius: 0.2em;
+  width: 100%;
 }
 
 .Card-clickable:hover {

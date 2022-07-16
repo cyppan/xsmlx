@@ -1,6 +1,5 @@
 import type { Session } from '../../../server/src/sessions';
 import Cards from '../cards/Cards';
-import Results from '../cards/Results';
 import Button from '../ui/Button';
 import Header from '../ui/Header';
 import Timer from '../ui/Timer';
@@ -29,7 +28,7 @@ export default function InSessionPage({ user, session }: InSessionPageProps) {
             <strong>{session.estimationsCount}</strong> estimated cards so far
           </span>
         }
-        right={[user, <Timer startDate={session.startedAt!} />]}
+        right={<>{user}<Timer startDate={session.startedAt!} /></>}
       />
       <br />
       <Toolbar
@@ -59,7 +58,6 @@ export default function InSessionPage({ user, session }: InSessionPageProps) {
       />
       <br />
       <Cards user={user} session={session} />
-      <Results user={user} session={session} />
     </>
   );
 }

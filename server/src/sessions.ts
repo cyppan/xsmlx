@@ -3,16 +3,16 @@ import * as trpc from '@trpc/server';
 import produce from 'immer';
 import { v4 as uuid } from 'uuid';
 
-export const cardSizes = ['XS', 'S', 'M', 'L', 'XL', '?'] as const;
-export type CardSize = typeof cardSizes[number];
+export type CardSize = string;
 export const Session = z.object({
   id: z.string(),
   startedAt: z.date().nullish(),
   estimationsCount: z.number(),
+  possibleSizes: z.array(z.string()),
   users: z.array(z.string()),
   votes: z.record(
     z.object({
-      size: z.enum(cardSizes),
+      size: z.string(),
       at: z.date(),
     })
   ),
@@ -23,9 +23,10 @@ export type Session = z.infer<typeof Session>;
 export class SessionsStore {
   private sessions: Record<string, Session> = {};
 
-  createSession(user: string): Session {
+  createSession(user: string, possibleSizes: string[]): Session {
     const session: Session = {
       id: uuid(),
+      possibleSizes,
       users: [user],
       votes: {},
       estimationsCount: 0,
