@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Session } from '../../../server/src/sessions';
+import type { Session } from '../../../server/src/sessions';
 import { trpc } from '../App';
 import Card from './Card';
+import CardResult from './CardResult';
 import './Cards.css';
-
-const cardSizes = ['XS', 'S', 'M', 'L', 'XL'] as const;
 
 export default function Cards({
   user,
@@ -15,7 +14,7 @@ export default function Cards({
 }) {
   const [rememberChoice, setRememberChoice] = useState<string | null>(null);
   const estimateMutation = trpc.useMutation('estimateSize');
-  
+
   const myVote = session.votes[user];
   useEffect(() => {
     if (myVote?.size == null) {
@@ -27,17 +26,22 @@ export default function Cards({
 
   return (
     <div className="Cards">
-      {cardSizes.map(size => (
+      {session.possibleSizes.map((size) => (
         <Card
-        isSelected={rememberChoice === size}
-        isClickable={canVote}
-        handleClick={() => {
-          estimateMutation.mutate({user, sessionId: session.id, chosenSize: size});
-          setRememberChoice(size);
-        }}
-      >
-        {size}
-      </Card>
+          size={size}
+          key={size}
+          isSelected={rememberChoice === size}
+          isClickable={canVote}
+          onClick={() => {
+            estimateMutation.mutate({
+              user,
+              sessionId: session.id,
+              chosenSize: size,
+            });
+            setRememberChoice(size);
+          }}
+          belowCardSlot={<CardResult session={session} size={size} />}
+        />
       ))}
     </div>
   );

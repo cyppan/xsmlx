@@ -1,0 +1,40 @@
+.CardResult {
+  width: var(--cardWidth);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 0;
+  gap: 5px;
+}
+
+.CardResultUser {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: var(--themeColor);
+  color: white;
+  border-radius: 0.2em;
+  animation-name: CardResultUser-animation;
+  animation-duration: 1s;
+  border-bottom: 1px solid white;
+  padding: 2px;
+  height: 24px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  font-size: 0.8em;
+}
+
+@keyframes CardResultUser-animation {
+  0% {
+    padding: 0;
+    height: 0;
+    border-bottom: 0;
+  }
+  100% {
+    height: 24px;
+    padding: 2px;
+    border-bottom: 1px solid white;
+  }
+}

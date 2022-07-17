@@ -1,12 +1,7 @@
 import * as trpc from '@trpc/server';
 import z from 'zod';
 import { EventEmitter } from 'events';
-import {
-  SessionsStore,
-  cardSizes,
-  Session,
-  mapAnonymousVotes,
-} from './sessions';
+import { SessionsStore, Session, mapAnonymousVotes } from './sessions';
 import superjson from 'superjson';
 
 const sessionsStore = new SessionsStore();
@@ -27,7 +22,7 @@ const ee = new MyEventEmitter();
 
 interface Context {}
 
-const appRouter = trpc
+const trpcRouter = trpc
   .router<Context>()
   .transformer(superjson)
   .query('get', {
@@ -38,10 +33,13 @@ const appRouter = trpc
     },
   })
   .mutation('create', {
-    input: z.object({ user: z.string() }),
+    input: z.object({ user: z.string(), possibleSizes: z.array(z.string()) }),
     output: z.string(),
     async resolve(req) {
-      const session = sessionsStore.createSession(req.input.user);
+      const session = sessionsStore.createSession(
+        req.input.user,
+        req.input.possibleSizes
+      );
       sessionsStore.saveSession(session);
       return session.id;
     },
@@ -76,7 +74,7 @@ const appRouter = trpc
     input: z.object({
       sessionId: z.string(),
       user: z.string(),
-      chosenSize: z.enum(cardSizes),
+      chosenSize: z.string(),
     }),
     async resolve(req) {
       sessionsStore.mutateSession(req.input.sessionId, (session) => {
@@ -135,5 +133,5 @@ const appRouter = trpc
     },
   });
 
-export type TRPCRouter = typeof appRouter;
-export default appRouter;
+export type TRPCRouter = typeof trpcRouter;
+export default trpcRouter;

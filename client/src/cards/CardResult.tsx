@@ -1,9 +1,6 @@
 import type { Session, CardSize } from '../../../server/src/sessions';
-import './Cards.css';
-import './Results.css';
+import './CardResult.css';
 import _ from 'lodash';
-
-const cardSizes = ['XS', 'S', 'M', 'L', 'XL'] as const;
 
 function getUsersBySize(session: Session): Record<CardSize, string[]> {
   let votes: { user: string; size: CardSize; at: Date }[] = Object.entries(
@@ -16,26 +13,22 @@ function getUsersBySize(session: Session): Record<CardSize, string[]> {
   return usersBySize as Record<CardSize, string[]>;
 }
 
-export default function Results({
-  user,
-  session,
-}: {
-  user: string;
+type CardResultProps = {
+  size: string;
   session: Session;
-}) {
+};
+
+export default function CardResult({ size, session }: CardResultProps) {
   const usersBySize = getUsersBySize(session);
   return (
     <>
-      {session.state === 'result' && (
-        <div className="SizesChart">
-          {session.state === 'result' &&
-            cardSizes.map((size) => (
-              <div className="SizeBar" key={size}>
-                {(usersBySize[size] ?? []).map((user) => (
-                  <div className="SizeBarPart">{user}</div>
-                ))}
-              </div>
-            ))}
+      {session.state === 'result' && (usersBySize[size] ?? []).length > 0 && (
+        <div className="CardResult" key={size}>
+          {usersBySize[size].map((user) => (
+            <div className="CardResultUser" title={user} key={user}>
+              {user}
+            </div>
+          ))}
         </div>
       )}
     </>

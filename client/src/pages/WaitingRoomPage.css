@@ -1,0 +1,21 @@
+.WaitingRoomContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+}
+
+.CopySessionLink {
+  display: flex;
+  width: 100%
+}
+
+.CopySessionLinkInput {
+  width: 100%;
+  flex-grow: 1;
+}
+
+.CopySessionLinkButton {
+  white-space: nowrap;
+}

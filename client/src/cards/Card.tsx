@@ -2,31 +2,46 @@ import classNames from 'classnames';
 
 import './Card.css';
 
-interface CardProps extends React.PropsWithChildren {
+type CardProps = {
   isSelected: boolean;
   isClickable: boolean;
-  handleClick: () => void;
+  onClick: () => void;
+  size: string;
+  belowCardSlot: React.ReactNode | undefined
 }
 
 export default function Card({
+  size,
   isSelected,
   isClickable,
-  handleClick,
-  children,
+  onClick,
+  belowCardSlot
 }: CardProps) {
   return (
-    <div
-      className={classNames('Card', {
-        'Card-selected': isSelected,
-        'Card-clickable': isClickable,
-      })}
-      onClick={() => {
-        if (isClickable) {
-          handleClick();
-        }
-      }}
-    >
-      {children}
+    <div className="CardContainer">
+      <div
+        className={classNames('Card', {
+          'Card-selected': isSelected,
+          'Card-clickable': isClickable,
+        })}
+        onClick={() => {
+          if (isClickable) {
+            onClick();
+          }
+        }}
+      >
+        {size}
+      </div>
+      {belowCardSlot}
+      {/* {session.state === 'result' && (usersBySize[size] ?? []).length > 0 && (
+        <div className="SizeBar">
+          {usersBySize[size].map((user) => (
+            <div className="SizeBarPart" key={user}>
+              {user}
+            </div>
+          ))}
+        </div>
+      )} */}
     </div>
   );
 }
