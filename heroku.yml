@@ -1,6 +1,6 @@
 build:
   config:
-    REACT_APP_THEME_COLOR: "#8979d8"
+    REACT_APP_THEME_COLOR: "#4d5bd7"
     REACT_APP_HOST: xsmlx.herokuapp.com
     REACT_APP_TLS: true
   docker:
