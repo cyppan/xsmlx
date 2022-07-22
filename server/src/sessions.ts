@@ -2,6 +2,8 @@ import z from 'zod';
 import * as trpc from '@trpc/server';
 import produce from 'immer';
 import { v4 as uuid } from 'uuid';
+import { RedisClientType } from 'redis';
+import superjson from 'superjson';
 
 export type CardSize = string;
 export const Session = z.object({
@@ -21,7 +23,7 @@ export const Session = z.object({
 export type Session = z.infer<typeof Session>;
 
 export class SessionsStore {
-  private sessions: Record<string, Session> = {};
+  constructor(private redisClient: RedisClientType) {}
 
   createSession(user: string, possibleSizes: string[]): Session {
     const session: Session = {
@@ -34,23 +36,30 @@ export class SessionsStore {
     };
     return session;
   }
-  saveSession(session: Session): void {
-    this.sessions[session.id] = session;
+  async saveSession(session: Session): Promise<Session> {
+    await this.redisClient.set(session.id, superjson.stringify(session), {
+      EX: 24 * 60 * 60,
+    });
+    return session;
   }
-  mutateSession(id: string, imperativeUpdater: (session: Session) => void) {
-    const session = this.getSession(id);
+  async mutateSession(
+    id: string,
+    imperativeUpdater: (session: Session) => void
+  ): Promise<Session> {
+    const session = await this.getSession(id);
     const updated = produce(session, imperativeUpdater);
-    this.saveSession(updated);
+    await this.saveSession(updated);
+    return updated;
   }
-  getSession(id: string): Session {
-    const session = this.sessions[id];
-    if (!session) {
+  async getSession(id: string): Promise<Session> {
+    const sessionRaw = await this.redisClient.get(id);
+    if (!sessionRaw) {
       throw new trpc.TRPCError({
         code: 'BAD_REQUEST',
         message: `could not find a session with id ${id}`,
       });
     }
-    return session;
+    return superjson.parse<Session>(sessionRaw);
   }
 }
 

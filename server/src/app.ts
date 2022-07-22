@@ -3,18 +3,35 @@ import { Application } from 'express';
 import express, { Request } from 'express';
 import cors from 'cors';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import trpcRouter from './router';
+import { buildTrpcRouter } from './router';
 import ws from 'ws';
 import { applyWSSHandler } from '@trpc/server/adapters/ws';
+import { createClient, RedisClientType } from 'redis';
+import { SessionsStore } from './sessions';
 
 export type Config = {
   port: number;
   serveFront: boolean;
+  redisUrl: string;
+  redisUseTls: boolean;
 };
 
-export function startApp(config: Config) {
+export async function startApp(config: Config) {
   const app: Application = express();
   app.use(cookieParser());
+
+  const redisClient: RedisClientType = createClient({
+    url: config.redisUrl,
+    socket: {
+      tls: config.redisUseTls,
+      rejectUnauthorized: false,
+    },
+  });
+  redisClient.on('error', (err) => console.error('Redis Client Error', err));
+  await redisClient.connect();
+
+  const sessionsStore = new SessionsStore(redisClient);
+  const trpcRouter = buildTrpcRouter(sessionsStore);
 
   const createContext = ({
     req,
