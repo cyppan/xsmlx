@@ -1,15 +1,16 @@
 .Button {
-  box-shadow: 3px 3px 0 var(--themeColor);
+  box-shadow: 4px 4px 0 var(--themeColor);
   border: none;
   border-radius: 0.1em;
   padding: 0.5em;
   cursor: pointer;
   background-color: #eee;
+  transform: translate(-2px, -2px);
 }
 .Button:hover {
   background-color: #ccc;
 }
 .Button:active {
   box-shadow: none;
-  transform: translateY(5px);
+  transform: translate(2px, 2px);
 }
