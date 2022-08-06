@@ -77,7 +77,7 @@ const EnumerableSizeForm: React.FunctionComponent<EnumerableSizeFormProps> = ({
   );
 };
 
-export default function CreateSessionPage({ user }: { user: string }) {
+export default function CreateSessionPage({ user }: { user: string | null }) {
   const createSessionMutation = trpc.useMutation('create');
   const [cardSizePattern, setCardSizePattern] =
     useState<CardSizePattern>('TeeShirtSize');
@@ -130,19 +130,22 @@ export default function CreateSessionPage({ user }: { user: string }) {
 
           <Button
             handleClick={() => {
-              createSessionMutation.mutate(
-                {
-                  user,
-                  possibleSizes: cardSizes,
-                },
-                {
-                  onSuccess: (sessionId) => {
-                    window.location.hash = sessionId;
-                    window.location.reload();
+              if (user != null) {
+                createSessionMutation.mutate(
+                  {
+                    user,
+                    possibleSizes: cardSizes,
                   },
-                }
-              );
+                  {
+                    onSuccess: (sessionId) => {
+                      window.location.hash = sessionId;
+                      window.location.reload();
+                    },
+                  }
+                );
+              }
             }}
+            disabled={user == null}
           >
             Create
           </Button>

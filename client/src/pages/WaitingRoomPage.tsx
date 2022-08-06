@@ -36,7 +36,7 @@ export default function WaitingRoomPage({
   user,
   session,
 }: {
-  user: string;
+  user: string | null;
   session: Session;
 }) {
   const [justCopied, onCopy] = useJustCopied();

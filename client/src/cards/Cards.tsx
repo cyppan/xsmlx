@@ -9,13 +9,13 @@ export default function Cards({
   user,
   session,
 }: {
-  user: string;
+  user?: string | null;
   session: Session;
 }) {
   const [rememberChoice, setRememberChoice] = useState<string | null>(null);
   const estimateMutation = trpc.useMutation('estimateSize');
 
-  const myVote = session.votes[user];
+  const myVote = user ? session.votes[user] : null;
   useEffect(() => {
     if (myVote?.size == null) {
       setRememberChoice(null);
@@ -33,12 +33,14 @@ export default function Cards({
           isSelected={rememberChoice === size}
           isClickable={canVote}
           onClick={() => {
-            estimateMutation.mutate({
-              user,
-              sessionId: session.id,
-              chosenSize: size,
-            });
-            setRememberChoice(size);
+            if (user != null) {
+              estimateMutation.mutate({
+                user,
+                sessionId: session.id,
+                chosenSize: size,
+              });
+              setRememberChoice(size);
+            }
           }}
           belowCardSlot={<CardResult session={session} size={size} />}
         />

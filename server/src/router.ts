@@ -26,7 +26,7 @@ export const buildTrpcRouter = (sessionsStore: SessionsStore) =>
     .router<Context>()
     .transformer(superjson)
     .query('get', {
-      input: z.object({ sessionId: z.string(), user: z.string() }),
+      input: z.object({ sessionId: z.string() }),
       output: Session,
       async resolve(req) {
         return mapAnonymousVotes(

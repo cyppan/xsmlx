@@ -7,33 +7,61 @@ import { httpLink } from '@trpc/client/links/httpLink';
 import { splitLink } from '@trpc/client/links/splitLink';
 import { wsLink, createWSClient } from '@trpc/client/links/wsLink';
 import superjson from 'superjson';
-import { useUser, useSession } from './hooks';
+import { useSession } from './hooks';
 import InSessionPage from './pages/InSessionPage';
 import CreateSessionPage from './pages/CreateSessionPage';
 import WaitingRoomPage from './pages/WaitingRoomPage';
+import PromptUsernameModal from './PromptUsernameModal';
+import { UserContext } from './user-context';
 
 const host = process.env.REACT_APP_HOST;
-const apiUrl = `http${process.env.REACT_APP_TLS === "true" ? "s" : ""}://${host}/trpc`;
-const websocketUrl = `ws${process.env.REACT_APP_TLS === "true" ? "s" : ""}://${host}/websockets`;
+const apiUrl = `http${
+  process.env.REACT_APP_TLS === 'true' ? 's' : ''
+}://${host}/trpc`;
+const websocketUrl = `ws${
+  process.env.REACT_APP_TLS === 'true' ? 's' : ''
+}://${host}/websockets`;
 
 if (!host || host.trim() === '') {
-  throw new Error('missing env var REACT_APP_HOST')
+  throw new Error('missing env var REACT_APP_HOST');
 }
 console.debug('config', { apiUrl, websocketUrl });
 
 export const trpc = createReactQueryHooks<TRPCRouter>();
 
-function App() {
-  const user = useUser();
-  const session = useSession(user);
+function App({ username }: { username: string | null }) {
+  const { session, joinSession } = useSession(username);
 
-  if (session == null) {
-    return <CreateSessionPage user={user} />
-  } else if (session.state === 'waiting') {
-    return <WaitingRoomPage user={user} session={session} />;
-  } else {
-    return <InSessionPage user={user} session={session} />;
-  }
+  return (
+    <>
+      <PromptUsernameModal
+        isOpen={username == null}
+        onFilled={() => joinSession()}
+      ></PromptUsernameModal>
+      {session == null ? (
+        <CreateSessionPage user={username} />
+      ) : session.state === 'waiting' ? (
+        <WaitingRoomPage user={username} session={session} />
+      ) : (
+        <InSessionPage user={username} session={session} />
+      )}
+    </>
+  );
+}
+
+function withUser(
+  WrappedComponent: React.FunctionComponent<{ username: string | null }>
+): React.FunctionComponent {
+  return function () {
+    const [username, setUsername] = useState<string | null>(
+      localStorage.getItem('user')
+    );
+    return (
+      <UserContext.Provider value={{ username, setUsername }}>
+        <WrappedComponent username={username} />
+      </UserContext.Provider>
+    );
+  };
 }
 
 function withTrpc(
@@ -71,4 +99,4 @@ function withTrpc(
   };
 }
 
-export default withTrpc(App);
+export default withTrpc(withUser(App));

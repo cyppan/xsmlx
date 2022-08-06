@@ -1,17 +1,11 @@
 import type { Session } from '../../server/src/sessions';
 import { trpc } from './App';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-export function useUser(): string {
-  let user = localStorage.getItem('user');
-  while (user == null || user.trim() === '') {
-    user = window.prompt("What's your name?");
-  }
-  localStorage.setItem('user', user);
-  return user!;
-}
-
-export function useSession(user: string): Session | null {
+export function useSession(user: string | null): {
+  session: Session | null;
+  joinSession: () => void;
+} {
   const sessionId = window.location.hash && window.location.hash.substring(1);
   const [session, setSession] = useState<Session | null>(null);
   trpc.useSubscription(['onSessionChanged', { sessionId }], {
@@ -20,13 +14,17 @@ export function useSession(user: string): Session | null {
     },
   });
   // used at application start
-  const sessionQuery = trpc.useQuery(['get', { sessionId, user }]);
+  const sessionQuery = trpc.useQuery(['get', { sessionId }]);
   const joinMutation = trpc.useMutation('join');
   if (session == null) {
     if (sessionQuery.data != null) {
       setSession(sessionQuery.data);
-      joinMutation.mutate({ sessionId: sessionQuery.data.id, user });
     }
   }
-  return session;
+  const joinSession = useCallback(() => {
+    if (session != null && user != null) {
+      joinMutation.mutate({ sessionId: session.id, user });
+    }
+  }, [session, user, joinMutation]);
+  return { session, joinSession };
 }
