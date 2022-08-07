@@ -63,6 +63,21 @@ export const buildTrpcRouter = (sessionsStore: SessionsStore) =>
         ee.emit('sessionChanged', session);
       },
     })
+    .mutation('exit', {
+      input: z.object({
+        user: z.string(),
+        sessionId: z.string(),
+      }),
+      async resolve(req) {
+        const session = await sessionsStore.mutateSession(
+          req.input.sessionId,
+          (session) => {
+            session.users = session.users.filter((u) => u !== req.input.user);
+          }
+        );
+        ee.emit('sessionChanged', session);
+      },
+    })
     .mutation('launch', {
       input: z.object({
         sessionId: z.string(),
@@ -99,6 +114,29 @@ export const buildTrpcRouter = (sessionsStore: SessionsStore) =>
               session.estimationsCount += 1;
               session.state = 'result';
             }
+          }
+        );
+        ee.emit('sessionChanged', session);
+      },
+    })
+    .mutation('rename', {
+      input: z.object({
+        sessionId: z.string(),
+        oldUsername: z.string(),
+        newUsername: z.string(),
+      }),
+      async resolve(req) {
+        const session = await sessionsStore.mutateSession(
+          req.input.sessionId,
+          (session) => {
+            if (session.votes[req.input.oldUsername] != null) {
+              session.votes[req.input.newUsername] =
+                session.votes[req.input.oldUsername];
+            }
+            delete session.votes[req.input.oldUsername];
+            session.users = session.users.map((u) =>
+              u === req.input.oldUsername ? req.input.newUsername : u
+            );
           }
         );
         ee.emit('sessionChanged', session);

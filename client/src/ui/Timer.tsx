@@ -48,9 +48,9 @@ export default function Timer({ startDate }: { startDate: Date }) {
   }, [startDate]);
 
   return (
-    <span className="Timer">
+    <code className="Timer">
       {hoursElapsed !== '00' && <>{hoursElapsed}:</>}
       {minutesElapsed}:{secondsElapsed}
-    </span>
+    </code>
   );
 }

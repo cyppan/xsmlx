@@ -21,12 +21,12 @@ function useJustCopied(): [boolean, () => void] {
       if (currentTimeoutId != null) {
         clearTimeout(currentTimeoutId);
       }
-    }
+    };
   }, [justCopied]);
 
   const onCopy = () => {
     if (!justCopied) {
-      setJustCopied(true)
+      setJustCopied(true);
     }
   };
   return [justCopied, onCopy];
@@ -45,7 +45,8 @@ export default function WaitingRoomPage({
   if (session.state !== 'waiting') return null;
   return (
     <>
-      <Header left={'waiting for users to join'} right={user} />
+      <Header left={<span className="hide-mobile">waiting for users to join</span>} />
+      <p className="hide-desktop">waiting for users to join</p><br />
       <Toolbar>
         <div className="WaitingRoomContainer">
           <div className="CopySessionLink">
@@ -73,7 +74,7 @@ export default function WaitingRoomPage({
           <ul>
             <li>{session.users[0]} created this session</li>
             {session.users.slice(1).map((user) => (
-              <li>{user} joined</li>
+              <li key={user}>{user} joined</li>
             ))}
           </ul>
           <Button

@@ -1,21 +1,11 @@
-.Header {
-  display: flex;
-  align-items: center;
-}
-
-.Header h1 {
+.Header-title {
   color: var(--themeColor);
+  margin-bottom: 0 !important;
+  font-size: 2.5em;
+  margin-right: 0.5em;
 }
 
-.Header-left {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.Header-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.level-item .heading {
+  margin-bottom: 0;
+  font-weight: bolder;
 }

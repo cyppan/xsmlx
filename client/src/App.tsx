@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import type { TRPCRouter } from '../../server/src/router';
 import { createReactQueryHooks } from '@trpc/react';
@@ -13,6 +13,7 @@ import CreateSessionPage from './pages/CreateSessionPage';
 import WaitingRoomPage from './pages/WaitingRoomPage';
 import PromptUsernameModal from './PromptUsernameModal';
 import { UserContext } from './user-context';
+import type { Session } from '../../server/src/sessions';
 
 const host = process.env.REACT_APP_HOST;
 const apiUrl = `http${
@@ -29,15 +30,15 @@ console.debug('config', { apiUrl, websocketUrl });
 
 export const trpc = createReactQueryHooks<TRPCRouter>();
 
-function App({ username }: { username: string | null }) {
-  const { session, joinSession } = useSession(username);
-
+function App({
+  username,
+  session,
+}: {
+  username: string | null;
+  session: Session | null;
+}) {
   return (
     <>
-      <PromptUsernameModal
-        isOpen={username == null}
-        onFilled={() => joinSession()}
-      ></PromptUsernameModal>
       {session == null ? (
         <CreateSessionPage user={username} />
       ) : session.state === 'waiting' ? (
@@ -49,17 +50,73 @@ function App({ username }: { username: string | null }) {
   );
 }
 
-function withUser(
-  WrappedComponent: React.FunctionComponent<{ username: string | null }>
+function withUserAndSession(
+  WrappedComponent: React.FunctionComponent<{
+    username: string | null;
+    session: Session | null;
+  }>
 ): React.FunctionComponent {
   return function () {
+    const [isEditingUsername, setIsEditingUsername] = useState<boolean>(false);
     const [username, setUsername] = useState<string | null>(
-      localStorage.getItem('user')
+      localStorage.getItem('username')
     );
+    const { session, joinSession, rename } = useSession();
+
+    // Open username prompt modal on page load if no local storage
+    useEffect(() => {
+      const currentUsername = localStorage.getItem('username');
+      if (currentUsername == null || currentUsername.length === 0) {
+        setIsEditingUsername(true);
+      }
+    }, [setIsEditingUsername]);
+
+    // automatically join the session on page load if local storage
+    const shouldAutoJoinSession = useRef<boolean>(true);
+    useEffect(() => {
+      if (isEditingUsername) {
+        shouldAutoJoinSession.current = false;
+      }
+      const currentUsername = localStorage.getItem('username');
+      if (
+        currentUsername != null &&
+        currentUsername.length > 0 &&
+        shouldAutoJoinSession.current &&
+        session &&
+        !session?.users.includes(currentUsername)
+      ) {
+        joinSession(currentUsername);
+        shouldAutoJoinSession.current = false;
+      }
+    }, [isEditingUsername, joinSession, session]);
+
     return (
-      <UserContext.Provider value={{ username, setUsername }}>
-        <WrappedComponent username={username} />
-      </UserContext.Provider>
+      <>
+        <UserContext.Provider
+          value={{
+            username,
+            setUsername,
+            isEditingUsername,
+            setIsEditingUsername,
+          }}
+        >
+          <PromptUsernameModal
+            isOpen={isEditingUsername}
+            onFilled={(oldUsername, newUsername) => {
+              if (newUsername != null && newUsername.length > 0) {
+                localStorage.setItem('username', newUsername);
+                if (oldUsername != null && oldUsername.length > 0) {
+                  rename(oldUsername, newUsername);
+                } else {
+                  joinSession(newUsername);
+                }
+                setIsEditingUsername(false);
+              }
+            }}
+          ></PromptUsernameModal>
+          <WrappedComponent username={username} session={session} />
+        </UserContext.Provider>
+      </>
     );
   };
 }
@@ -99,4 +156,4 @@ function withTrpc(
   };
 }
 
-export default withTrpc(withUser(App));
+export default withTrpc(withUserAndSession(App));

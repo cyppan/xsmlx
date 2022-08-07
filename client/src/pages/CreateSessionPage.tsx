@@ -91,7 +91,7 @@ export default function CreateSessionPage({ user }: { user: string | null }) {
 
   return (
     <>
-      <Header left={<h2>poker planning</h2>} right={user} />
+      <Header left={<h2>poker planning</h2>} />
       <Toolbar>
         <div className="CreateSessionPageForm">
           <h3>Create a poker planning session:</h3>
