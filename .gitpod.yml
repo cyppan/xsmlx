@@ -1,0 +1,22 @@
+tasks:
+  - name: install server
+    before: cd server
+    init: |
+      yarn install
+      gp sync-done install-server
+  - name: install client
+    before: cd client
+    init: |
+      yarn install
+      gp sync-done install-client
+  - name: start server
+    before: cd server
+    init: gp sync-await install-server
+    command: |
+      docker compose up -d
+      yarn start
+  - name: start client
+    before: cd client
+    init: gp sync-await install-client
+    command: yarn start
+  
